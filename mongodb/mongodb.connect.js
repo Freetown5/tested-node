@@ -1,0 +1,1 @@
+// mongodb+srv://I_Con:<password>@cluster0.lfwrb.mongodb.net/<dbname>?retryWrites=true&w=majority
