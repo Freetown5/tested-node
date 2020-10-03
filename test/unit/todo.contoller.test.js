@@ -14,20 +14,29 @@ beforeEach(() => {
 })
 
 describe("TodoController.createTodo", () => {
+
+    beforeEach(() => {
+        req.body = newTodo; 
+    });
+
     it("todo function should exist", () => {
         expect(typeof TodoController.createTodo).toBe("function");
     });
 
     it("should call the TodoModel.create", () => {
-        req.body = newTodo;
         TodoController.createTodo(req, res, next);
         expect(TodoModel.create).toBeCalledWith(newTodo);
     });
 
     it("should return a 201 response code", () => {
-        req.body = newTodo;
         TodoController.createTodo(req, res, next);
         expect(res.statusCode).toBe(201);
         expect(res._isEndCalled()).toBeTruthy();
-    })
+    });
+
+    it("should return json body in respose", () => {
+        TodoModel.create.mockReturnValue(newTodo);
+        TodoController.createTodo(req, res, next);
+        expect(res._getJSONData()).toStrictEqual(newTodo);
+    });
 });
