@@ -1,4 +1,4 @@
-const TodoController = require("../../controllers/todo.controller");
+const TodoController = require("../../controller/todo.controller");
 
 describe("TodoController.createTodo", () => {
     it("todo function should exist", () => {
