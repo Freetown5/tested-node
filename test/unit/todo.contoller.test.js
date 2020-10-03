@@ -5,6 +5,13 @@ const newTodo = require("../mock-data/new-todo.json");
 
 // overrides the model function and simply calls it
 TodoModel.create = jest.fn();
+let req, res, next;
+
+beforeEach(() => {
+    req = httpMocks.createRequest();
+    res = httpMocks.createResponse();
+    next = null;
+})
 
 describe("TodoController.createTodo", () => {
     it("todo function should exist", () => {
@@ -12,12 +19,15 @@ describe("TodoController.createTodo", () => {
     });
 
     it("should call the TodoModel.create", () => {
-        let req, res, next;
-        req = httpMocks.createRequest();
-        res = httpMocks.createResponse();
-        next = null;
         req.body = newTodo;
         TodoController.createTodo(req, res, next);
         expect(TodoModel.create).toBeCalledWith(newTodo);
     });
+
+    it("should return a 201 response code", () => {
+        req.body = newTodo;
+        TodoController.createTodo(req, res, next);
+        expect(res.statusCode).toBe(201);
+        expect(res._isEndCalled()).toBeTruthy();
+    })
 });
