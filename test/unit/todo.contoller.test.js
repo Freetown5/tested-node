@@ -2,6 +2,7 @@ const TodoController = require("../../controller/todo.controller");
 const TodoModel = require("../../model/todo.model");
 const httpMocks = require("node-mocks-http");
 const newTodo = require("../mock-data/new-todo.json");
+const allTodos = require("../mock-data/all-todos.json");
 
 // overrides the model function and simply calls it
 TodoModel.create = jest.fn();
@@ -22,6 +23,14 @@ describe("TodoController.getTodos", () => {
     it("should call TodoModel.find({})", async () => {
         await TodoController.getTodos(req, res, next);
         expect(TodoModel.find).toHaveBeenCalledWith({});
+    });
+
+    it("should return response with status 200 and all todos", async () => {
+        TodoModel.find.mockReturnValue(allTodos);
+        await TodoController.getTodos(req, res, next);
+        expect(res.statusCode).toBe(200);
+        expect(res._isEndCalled()).toBeTruthy();
+        expect(res._getJSONData()).toStrictEqual(allTodos);
     });
 })
 
@@ -46,7 +55,7 @@ describe("TodoController.createTodo", () => {
         expect(res._isEndCalled()).toBeTruthy();
     });
 
-    it("should return json body in respose", async () => {
+    it("should return json body in response", async () => {
         TodoModel.create.mockReturnValue(newTodo);
         await TodoController.createTodo(req, res, next);
         expect(res._getJSONData()).toStrictEqual(newTodo);
