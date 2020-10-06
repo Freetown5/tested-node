@@ -32,6 +32,14 @@ describe("TodoController.getTodos", () => {
         expect(res._isEndCalled()).toBeTruthy();
         expect(res._getJSONData()).toStrictEqual(allTodos);
     });
+
+    it("should handle errors", async () => {
+        const errorMessage = { message: "Get not working" };
+        const rejectedPromise = Promise.reject(errorMessage);
+        TodoModel.find.mockReturnValue(rejectedPromise);
+        await TodoController.getTodos(req, res, next);
+        expect(next).toBeCalledWith(errorMessage);
+    })
 })
 
 describe("TodoController.createTodo", () => {
