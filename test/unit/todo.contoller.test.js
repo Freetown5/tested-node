@@ -13,13 +13,19 @@ beforeEach(() => {
     next = jest.fn();
 })
 
+describe("TodoController.getTodos", () => {
+    it("should have a get todos function", () => {
+        expect(typeof TodoController.getTodos).toBe("function");
+    });
+})
+
 describe("TodoController.createTodo", () => {
 
     beforeEach(() => {
         req.body = newTodo; 
     });
 
-    it("todo function should exist", () => {
+    it("should have a create todo function", () => {
         expect(typeof TodoController.createTodo).toBe("function");
     });
 

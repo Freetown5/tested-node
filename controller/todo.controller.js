@@ -8,3 +8,7 @@ exports.createTodo = async (req, res, next) => {
         next(err);
     }
 };
+
+exports.getTodos = (req, res, next) => {
+    console.log("This exists");
+}
