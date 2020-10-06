@@ -10,5 +10,5 @@ exports.createTodo = async (req, res, next) => {
 };
 
 exports.getTodos = (req, res, next) => {
-    console.log("This exists");
+   TodoModel.find({});
 }
