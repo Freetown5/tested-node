@@ -36,6 +36,14 @@ describe("TodoController.getTodoById", () => {
         expect(res._isEndCalled()).toBeTruthy();
         expect(res._getJSONData()).toStrictEqual(singleTodo);
     });
+
+    it("should handle errors", async () => {
+        const errorMessage = { message: "Issues with connecting to the database" };
+        const rejectedPromise = Promise.reject(errorMessage);
+        TodoModel.findById.mockReturnValue(rejectedPromise);
+        await TodoController.getTodoById(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
+    });
 });
 
 describe("TodoController.getTodos", () => {
