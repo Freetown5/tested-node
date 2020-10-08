@@ -2,11 +2,14 @@ const TodoController = require("../../controller/todo.controller");
 const TodoModel = require("../../model/todo.model");
 const httpMocks = require("node-mocks-http");
 const newTodo = require("../mock-data/new-todo.json");
+const singleTodo = require("../mock-data/single-todo.json");
 const allTodos = require("../mock-data/all-todos.json");
 
 // overrides the model function and simply calls it
 TodoModel.create = jest.fn();
 TodoModel.find = jest.fn();
+TodoModel.findById = jest.fn();
+
 let req, res, next;
 
 beforeEach(() => {
@@ -14,6 +17,26 @@ beforeEach(() => {
     res = httpMocks.createResponse();
     next = jest.fn();
 })
+
+describe("TodoController.getTodoById", () => {
+    it("should have a get todo by id function", () => {
+        expect(typeof TodoController.getTodoById).toBe("function");
+    });
+
+    it("should call Todo.Model.findById({})", async () => {
+        req.params.todoId = "5f7cc35eedf19612411f3114";
+        await TodoController.getTodoById(req, res, next);
+        expect(TodoModel.findById).toBeCalledWith("5f7cc35eedf19612411f3114");
+    });
+
+    it("should return json body and response code 200", async () => {
+        TodoModel.findById.mockReturnValue(singleTodo);
+        await TodoController.getTodoById(req, res, next);
+        expect(res.statusCode).toBe(200);
+        expect(res._isEndCalled()).toBeTruthy();
+        expect(res._getJSONData()).toStrictEqual(singleTodo);
+    });
+});
 
 describe("TodoController.getTodos", () => {
     it("should have a get todos function", () => {
@@ -39,8 +62,8 @@ describe("TodoController.getTodos", () => {
         TodoModel.find.mockReturnValue(rejectedPromise);
         await TodoController.getTodos(req, res, next);
         expect(next).toBeCalledWith(errorMessage);
-    })
-})
+    });
+});
 
 describe("TodoController.createTodo", () => {
 
