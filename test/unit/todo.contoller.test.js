@@ -6,10 +6,12 @@ const singleTodo = require("../mock-data/single-todo.json");
 const allTodos = require("../mock-data/all-todos.json");
 
 // overrides the model function and simply calls it
-TodoModel.create = jest.fn();
-TodoModel.find = jest.fn();
-TodoModel.findById = jest.fn();
-TodoModel.findByIdAndUpdate = jest.fn();
+// TodoModel.create = jest.fn();
+// TodoModel.find = jest.fn();
+// TodoModel.findById = jest.fn();
+// TodoModel.findByIdAndUpdate = jest.fn();
+// TodoModel.findByIdAndDelete(todoId);
+jest.mock("../../model/todo.model");
 
 let req, res, next;
 const todoId = "5f7cc35eedf19612411f3114";
@@ -18,6 +20,41 @@ beforeEach(() => {
     req = httpMocks.createRequest();
     res = httpMocks.createResponse();
     next = jest.fn();
+});
+
+describe("TodoController.delete", () => {
+    it("should have a delete function", () => {
+        expect(typeof TodoController.delete).toBe("function");
+    });
+
+    it("should update with TodoModel.findByIdAndDelete", async () => {
+        req.params.todoId = todoId;
+        await TodoController.delete(req, res, next);
+        expect(TodoModel.findByIdAndDelete).toBeCalledWith(todoId);
+    });
+
+    it("should return a response with json data and http code 200", async () => {
+        TodoModel.findByIdAndDelete.mockReturnValue(singleTodo);
+        await TodoController.delete(req, res, next);
+        expect(res.statusCode).toBe(200);
+        expect(res._isEndCalled()).toBeTruthy();
+        expect(res._getJSONData()).toStrictEqual(singleTodo);
+    });
+
+    it("should handle errors", async () => {
+        const errorMessage = { message: "Issues with connecting to the database" };
+        const rejectedPromise = Promise.reject(errorMessage);
+        TodoModel.findByIdAndDelete.mockReturnValue(rejectedPromise);
+        await TodoController.delete(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
+    });
+
+    it("should return 404 when an item doesn't exist", async () => {
+        TodoModel.findByIdAndDelete.mockReturnValue(null);
+        await TodoController.delete(req, res, next);
+        expect(res.statusCode).toBe(404);
+        expect(res._isEndCalled()).toBeTruthy();
+    })
 });
 
 describe("TodoController.updateTodo", () => {
